@@ -45,13 +45,13 @@ const Index = () => {
               </a>
             </div>
             <div className="flex items-center gap-4">
-              {/* MODIFIED: Link to /auth instead of /chat */}
               <Link to="/auth">
                 <Button variant="ghost" size="sm">
                   Sign In
                 </Button>
               </Link>
-              <Link to="/chat">
+              {/* FIXED: Links to /auth for sign-in/up */}
+              <Link to="/auth">
                 <Button size="sm" className="bg-primary hover:bg-primary-hover">
                   Try for free
                 </Button>
@@ -77,8 +77,12 @@ const Index = () => {
             natural language. Get accurate results in seconds.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link to="/chat">
-              <Button size="lg" className="bg-primary hover:bg-primary-hover text-lg px-8">
+            {/* FIXED: Links to /auth for sign-in/up */}
+            <Link to="/auth">
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-primary-hover text-lg px-8"
+              >
                 Try for free now <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
@@ -202,7 +206,8 @@ const Index = () => {
               </div>
             </div>
             <div className="p-6 bg-muted/30 border-t border-border text-center">
-              <Link to="/chat">
+              {/* FIXED: Links to /auth for sign-in/up */}
+              <Link to="/auth">
                 <Button className="bg-primary hover:bg-primary-hover">
                   Start using Text2SQL.ai{" "}
                   <ArrowRight className="ml-2 w-4 h-4" />
@@ -283,7 +288,7 @@ const Index = () => {
                   </li>
                 ))}
               </ul>
-              <Link to="/chat">
+              <Link to="/upgrade">
                 <Button className="w-full bg-primary hover:bg-primary-hover">
                   Get Started
                 </Button>
@@ -315,7 +320,6 @@ const Index = () => {
                   </li>
                 ))}
               </ul>
-              {/* MODIFIED: Wrapped Button in Link to /contact */}
               <Link to="/contact" className="w-full">
                 <Button className="w-full bg-primary hover:bg-primary-hover">
                   Contact Sales
@@ -373,8 +377,12 @@ const Index = () => {
               Stop wasting time writing SQL queries. Let our AI generate them for
               you in seconds.
             </p>
-            <Link to="/chat">
-              <Button size="lg" className="bg-primary hover:bg-primary-hover text-lg px-8">
+            {/* FIXED: Links to /auth for sign-in/up */}
+            <Link to="/auth">
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-primary-hover text-lg px-8"
+              >
                 Try for free <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
@@ -416,8 +424,9 @@ const Index = () => {
                     Pricing
                   </a>
                 </li>
+                {/* FIXED: Links to /auth for sign-in/up */}
                 <li>
-                  <Link to="/chat" className="hover:text-foreground transition">
+                  <Link to="/auth" className="hover:text-foreground transition">
                     Try Now
                   </Link>
                 </li>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"; // Import useCallback
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,11 +15,26 @@ import {
   X,
   LogOut,
   MessageSquare,
+  Key,
+  BadgeAlert,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session } from "@supabase/supabase-js";
-import { cn } from "@/lib/utils"; // Import cn
+import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 interface Message {
   id: number;
@@ -66,22 +81,131 @@ interface ChatSession {
   messages: Message[];
 }
 
-const Chat = ({
+// COMPONENT: Settings Dialog
+const SettingsDialog = ({
   session,
+  open,
+  onOpenChange,
 }: {
   session: Session | null;
-  loading: boolean; // We still receive this prop, but won't use it
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) => {
+  const userEmail = session?.user?.email || "N/A";
+  const authMethod = session?.user?.app_metadata.provider || "email";
+  const isEmailPasswordUser = authMethod === "email";
+
+  const handlePasswordReset = async () => {
+    if (!session?.user?.email) {
+      toast.error("Error", {
+        description: "Could not find user email to send reset link.",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        session.user.email,
+        {
+          redirectTo: `${window.location.origin}/auth?reset=true`, // Redirect user after reset
+        },
+      );
+
+      if (error) throw error;
+
+      toast.success("Password Reset Email Sent!", {
+        description: "Check your inbox for the link to change your password.",
+      });
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Password reset error:", error);
+      toast.error("Error", {
+        description:
+          "Failed to send reset link. Please try again or contact support.",
+      });
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px] bg-card text-card-foreground border-border">
+        <DialogHeader>
+          <DialogTitle>Account Settings</DialogTitle>
+          <DialogDescription>
+            Manage your user details and security settings.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-4 space-y-6">
+          <div className="space-y-2">
+            <h3 className="text-base font-semibold">User Information</h3>
+            <div className="space-y-1">
+              <Label>Email (Username)</Label>
+              <Input value={userEmail} disabled className="bg-muted/50" />
+            </div>
+            <div className="flex justify-between items-center text-sm">
+              <Label className="font-normal text-muted-foreground">
+                Authentication Method:
+              </Label>
+              <Badge
+                variant="secondary"
+                className="capitalize bg-primary/10 text-primary"
+              >
+                {authMethod}
+              </Badge>
+            </div>
+          </div>
+
+          <div className="space-y-2 border-t border-border pt-4">
+            <h3 className="text-base font-semibold flex items-center gap-2">
+              <Key className="w-4 h-4" /> Change Password
+            </h3>
+            {isEmailPasswordUser ? (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  A password reset link will be sent to your registered email
+                  address.
+                </p>
+                <Button
+                  onClick={handlePasswordReset}
+                  className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                >
+                  Send Password Reset Email
+                </Button>
+              </div>
+            ) : (
+              <Alert className="border-primary/50 bg-primary/5">
+                <BadgeAlert className="w-4 h-4 text-primary" />
+                <AlertTitle>Password Managed by Provider</AlertTitle>
+                <AlertDescription className="text-sm text-primary">
+                  Since you signed in with {authMethod}, you must change your
+                  password directly through your {authMethod} account settings.
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="outline">
+              Close
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const Chat = ({ session }: { session: Session | null; loading: boolean }) => {
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
   const [chatHistory, setChatHistory] = useState<ChatSession[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Helper function to save the currently active chat, now memoized
   const saveCurrentChat = useCallback(() => {
-    // Only save if we have messages and an active chat ID
     if (currentMessages.length === 0 || !activeChatId) return;
 
     const title = currentMessages[0].content.substring(0, 30) + "...";
@@ -92,7 +216,6 @@ const Chat = ({
       );
 
       if (existingChatIndex !== -1) {
-        // Update existing chat in history
         const updatedHistory = [...prevHistory];
         updatedHistory[existingChatIndex] = {
           ...updatedHistory[existingChatIndex],
@@ -101,7 +224,6 @@ const Chat = ({
         };
         return updatedHistory;
       } else {
-        // It's a new chat, add it to history
         const newSession: ChatSession = {
           id: activeChatId,
           title: title,
@@ -110,9 +232,8 @@ const Chat = ({
         return [newSession, ...prevHistory];
       }
     });
-  }, [activeChatId, currentMessages]); // Dependencies are stable or values
+  }, [activeChatId, currentMessages]);
 
-  // Set the initial demo chat *once*
   useEffect(() => {
     if (chatHistory.length === 0) {
       const demoSession: ChatSession = {
@@ -124,32 +245,27 @@ const Chat = ({
       setCurrentMessages(demoSession.messages);
       setActiveChatId(demoSession.id);
     }
-  }, [chatHistory.length]); // Only runs when chatHistory.length changes (from 0 to 1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Get user's initial (e.g., 'J')
   const userInitial = session?.user?.email
     ? session.user.email[0].toUpperCase()
     : "U";
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate("/"); // Navigate to home after sign out
+    navigate("/");
   };
 
   const handleNewChat = () => {
-    // 1. Save the current chat to history if it's not empty
     saveCurrentChat();
-
-    // 2. Clear current messages and set a new active ID
     setCurrentMessages([]);
-    setActiveChatId(null); // No active session ID until a message is sent
+    setActiveChatId(null);
   };
 
   const handleSelectHistory = (id: string) => {
-    // 1. Save the current chat before switching
     saveCurrentChat();
 
-    // 2. Load the selected chat
     const sessionToLoad = chatHistory.find((session) => session.id === id);
     if (sessionToLoad) {
       setCurrentMessages(sessionToLoad.messages);
@@ -166,12 +282,9 @@ const Chat = ({
       content: input,
     };
 
-    // This is the *only* place we should be setting currentMessages directly
-    // in response to a user action.
     const updatedMessages = [...currentMessages, newMessage];
     setCurrentMessages(updatedMessages);
 
-    // If this is the first message of a new chat, create a new session ID
     let currentActiveId = activeChatId;
     if (currentActiveId === null) {
       currentActiveId = `chat-${Date.now()}`;
@@ -192,8 +305,6 @@ const Chat = ({
       ]);
     }, 500);
 
-    // Save chat to history *after* sending
-    // We update history with the *new* message included
     const title = updatedMessages[0].content.substring(0, 30) + "...";
     setChatHistory((prevHistory) => {
       const existingChatIndex = prevHistory.findIndex(
@@ -201,7 +312,6 @@ const Chat = ({
       );
 
       if (existingChatIndex !== -1) {
-        // Update existing chat
         const updatedHistory = [...prevHistory];
         updatedHistory[existingChatIndex] = {
           ...updatedHistory[existingChatIndex],
@@ -210,7 +320,6 @@ const Chat = ({
         };
         return updatedHistory;
       } else {
-        // Add new chat
         const newSession: ChatSession = {
           id: currentActiveId!,
           title: title,
@@ -221,19 +330,15 @@ const Chat = ({
     });
   };
 
-  // This `useEffect` was causing the issue.
-  // We will now save to history *inside* the handleSend and handleNewChat functions,
-  // which is a more predictable pattern.
-  /*
-  useEffect(() => {
-    if (activeChatId) {
-      saveCurrentChat();
-    }
-  }, [currentMessages, activeChatId, saveCurrentChat]);
-  */
-
   return (
     <div className="h-screen flex bg-chat-bg text-chat-foreground">
+      {/* Settings Dialog */}
+      <SettingsDialog
+        session={session}
+        open={settingsDialogOpen}
+        onOpenChange={setSettingsDialogOpen}
+      />
+
       {/* Sidebar */}
       <aside
         className={`${
@@ -304,7 +409,11 @@ const Chat = ({
                   <Database className="w-4 h-4" />
                   <span>Databases</span>
                 </button>
-                <button className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-chat-message transition text-sm">
+                {/* Settings button opens dialog */}
+                <button
+                  className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-chat-message transition text-sm"
+                  onClick={() => setSettingsDialogOpen(true)}
+                >
                   <Settings className="w-4 h-4" />
                   <span>Settings</span>
                 </button>
@@ -321,12 +430,15 @@ const Chat = ({
             <p className="text-xs text-chat-muted mb-2">
               Get access to all features
             </p>
-            <Button
-              size="sm"
-              className="w-full bg-primary hover:bg-primary-hover"
-            >
-              Upgrade Now
-            </Button>
+            {/* FIXED: Link to the /upgrade route */}
+            <Link to="/upgrade" className="w-full">
+              <Button
+                size="sm"
+                className="w-full bg-primary hover:bg-primary-hover"
+              >
+                Upgrade Now
+              </Button>
+            </Link>
           </div>
         </div>
       </aside>
@@ -445,7 +557,7 @@ const Chat = ({
                                     dangerouslySetInnerHTML={{
                                       __html: highlighted,
                                     }}
-                                  />
+                               B                                  />
                                 );
                               })}
                             </code>

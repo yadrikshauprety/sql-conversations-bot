@@ -36,7 +36,8 @@ const Contact = () => {
                   Sign In
                 </Button>
               </Link>
-              <Link to="/chat">
+              {/* FIXED: Links to /auth for sign-in/up */}
+              <Link to="/auth">
                 <Button size="sm" className="bg-primary hover:bg-primary-hover">
                   Try for free
                 </Button>
@@ -94,4 +95,4 @@ const Contact = () => {
   );
 };
 
-export default Contact; 
+export default Contact;

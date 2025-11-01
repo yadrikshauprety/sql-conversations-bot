@@ -2,12 +2,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Database } from "lucide-react";
-// No longer need useNavigate or useEffect here
 
 const Auth = () => {
-  // All navigation logic is now handled by the routing in App.tsx
-  // This component's only job is to show the sign-in form.
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-6">

@@ -16,6 +16,7 @@ import Index from "./pages/Index";
 import Chat from "./pages/Chat";
 import Auth from "./pages/Auth";
 import Contact from "./pages/Contact";
+import ProUpgrade from "./pages/ProUpgrade"; // NEW: Import the ProUpgrade page
 import NotFound from "./pages/NotFound";
 import { Skeleton } from "./components/ui/skeleton"; // For loading state
 
@@ -85,11 +86,6 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
 
-            {/* This logic handles the /auth route:
-              1. If loading, show loader.
-              2. If NOT loading and NO session, show the Auth page.
-              3. If NOT loading and a session EXISTS, redirect to /chat.
-            */}
             <Route
               path="/auth"
               element={
@@ -114,7 +110,7 @@ const App = () => {
                 path="/chat"
                 element={<Chat session={session} loading={loading} />}
               />
-              {/* You can add more protected routes here, e.g. /chat/:id */}
+              <Route path="/upgrade" element={<ProUpgrade />} /> {/* NEW PROTECTED ROUTE */}
             </Route>
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -89,7 +89,7 @@ const ProUpgrade = () => {
 
         // Show success toast
         toast.success("Payment Successful!", {
-          description: "Welcome to Text2SQL.ai Pro! Your plan is now active.",
+          description: "Welcome to QueryZen Pro! Your plan is now active.",
         });
 
         // --- NEW: Generate the receipt ---
@@ -121,7 +121,7 @@ const ProUpgrade = () => {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <Database className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold">Text2SQL.ai</span>
+              <span className="text-xl font-bold">QueryZen</span>
             </Link>
             <Link to="/chat">
               <Button variant="ghost" size="sm">
@@ -146,14 +146,14 @@ const ProUpgrade = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-5xl font-bold mb-6">
-                  $19<span className="text-lg font-normal text-muted-foreground"> / month</span>
+                  Rs199<span className="text-lg font-normal text-muted-foreground"> / month</span>
                 </div>
                 <ul className="space-y-4">
                   {[
-                    "Unlimited messages per month",
+                    "Unlimited messages per month + Receipts generation",
                     "SQL AI generation & optimization",
-                    "Support for 12+ database types",
-                    "API Access (100 requests/month)",
+                    "Multilingual and domain-specific SQL support",
+                    "Access to early feature releases",
                     "Priority email support",
                   ].map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -164,7 +164,7 @@ const ProUpgrade = () => {
                 </ul>
                 <div className="mt-8 pt-4 border-t border-border flex items-center gap-3 text-sm text-muted-foreground">
                   <Lock className="w-4 h-4" />
-                  Secure payment powered by mock gateway.
+                  Secure payment.
                 </div>
               </CardContent>
             </Card>
@@ -231,7 +231,7 @@ const ProUpgrade = () => {
                     className="w-full bg-primary hover:bg-primary-hover"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Processing..." : "Confirm Payment ($19/month)"}
+                    {isLoading ? "Processing..." : "Confirm Payment (Rs 199/month)"}
                   </Button>
                 </form>
               </CardContent>

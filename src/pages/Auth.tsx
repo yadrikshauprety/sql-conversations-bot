@@ -11,7 +11,7 @@ const Auth = () => {
           <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
             <Database className="w-6 h-6 text-primary-foreground" />
           </div>
-          <span className="text-2xl font-bold">Text2SQL.ai</span>
+          <span className="text-2xl font-bold">QueryZen</span>
         </div>
         <SupabaseAuth
           supabaseClient={supabase}

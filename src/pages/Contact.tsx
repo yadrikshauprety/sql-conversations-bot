@@ -28,7 +28,7 @@ const Contact = () => {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <Database className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold">Text2SQL.ai</span>
+              <span className="text-xl font-bold">QueryZen</span>
             </Link>
             <div className="flex items-center gap-4">
               <Link to="/auth">

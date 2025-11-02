@@ -22,7 +22,7 @@ const Index = () => {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <Database className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold">Text2SQL.ai</span>
+              <span className="text-xl font-bold">QueryZen</span>
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a
@@ -67,7 +67,7 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center relative">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-6 text-sm font-medium">
             <Sparkles className="w-4 h-4" />
-            Most Popular SQL AI Tool
+            Automating Queries through NLP driven Text to SQL Translation
           </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6 max-w-4xl mx-auto leading-tight">
             Convert Text to SQL with AI, in seconds
@@ -97,7 +97,7 @@ const Index = () => {
               ))}
             </div>
             <span className="text-sm">
-              from <strong className="text-foreground">256k+</strong> happy users
+              from <strong className="text-foreground">AIT</strong> Department of CSE
             </span>
           </div>
         </div>
@@ -108,11 +108,11 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Your personal SQL AI Assistant
+              “Ask. Generate. Query. Done.”
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Get accurate SQL queries in seconds. No need to wait for data
-              analysts or waste hours on complex queries.
+              Transform how you interact with your databases. Our AI-powered
+              Text-to-SQL tool makes data querying effortless and efficient.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -268,7 +268,7 @@ const Index = () => {
             <div className="bg-card p-8 rounded-2xl border border-border">
               <h3 className="text-2xl font-bold mb-2">Pro</h3>
               <div className="mb-6">
-                <span className="text-4xl font-bold">$19</span>
+                <span className="text-4xl font-bold">Rs 199</span>
                 <span className="text-muted-foreground">/month</span>
               </div>
               <p className="text-muted-foreground mb-6">
@@ -276,10 +276,10 @@ const Index = () => {
               </p>
               <ul className="space-y-3 mb-8">
                 {[
-                  "Unlimited messages per month",
-                  "SQL AI generation & optimization",
-                  "Support for 12+ database types",
-                  "API Access (100 requests/month)",
+                  "Unlimited messages per month + Receipts generation",
+                  "SQL AI generation & optimization ",
+                  "Mutilingual and domain-specific SQL support",
+                  "Access to early feature releases",
                   "Priority email support",
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -310,8 +310,8 @@ const Index = () => {
                   "All Pro features",
                   "Custom limits",
                   "Dedicated support",
-                  "Private deployment",
-                  "SSO Login",
+                  "Lightning-fast ",
+                  "Support for on-premise databases",
                   "Custom integrations",
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -345,12 +345,12 @@ const Index = () => {
                 a: "Our AI generates highly accurate SQL queries, especially when you provide your database schema. Most queries work on the first try.",
               },
               {
-                q: "What databases are supported?",
-                a: "We support all major SQL databases including MySQL, PostgreSQL, Oracle, SQL Server, SQLite, and more.",
+                q: "Who can use this system?",
+                a: "This platform is designed for farmers, small business owners, educators, healthcare workers, and anyone who wants to access or analyze data without needing to learn SQL.",
               },
               {
                 q: "Is my data safe?",
-                a: "Yes! Your database credentials and data stay completely private. Only schema names are sent to AI providers.",
+                a: "Absolutely. Your data is stored on your local device or server. The system uses Ollama to run the Llama 3.1 8B model locally — so no data is shared with cloud providers or third parties. Only non-sensitive schema information is used for AI understanding.",
               },
               {
                 q: "Can I use this for free?",
@@ -399,10 +399,11 @@ const Index = () => {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <Database className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="font-bold">Text2SQL.ai</span>
+                <span className="font-bold">QueryZen</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Convert text to SQL with AI, in seconds
+                Ask.Generate.Query.Done. Transforming data access with AI-powered
+                Text-to-SQL.
               </p>
             </div>
             <div>
@@ -433,21 +434,21 @@ const Index = () => {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4">Team</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
                   <a href="#" className="hover:text-foreground transition">
-                    About
+                    Tanushree
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-foreground transition">
-                    Blog
+                    Yadriksha
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-foreground transition">
-                    Careers
+                    Tanisha
                   </a>
                 </li>
               </ul>
@@ -469,7 +470,7 @@ const Index = () => {
             </div>
           </div>
           <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            <p>© 2025 Text2SQL.ai. All rights reserved.</p>
+            <p>© 2025 Tanisha Yadav, Tanushree, Yadriksha Uprety. All rights reserved.</p>
           </div>
         </div>
       </footer>

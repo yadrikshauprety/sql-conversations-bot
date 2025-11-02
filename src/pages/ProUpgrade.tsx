@@ -1,19 +1,81 @@
+// src/pages/ProUpgrade.tsx
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Database, Lock, CreditCard, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import {
+  Check,
+  Database,
+  Lock,
+  CreditCard,
+  ArrowLeft,
+  Sparkles,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client"; // Import Supabase client
 
 const ProUpgrade = () => {
-  const handlePayment = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  // Add state for each form field
+  const [cardName, setCardName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvc, setCvc] = useState(""); // We won't save this, but we need state for the input
+
+  const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock payment processing logic
-    toast.success("Payment Successful!", {
-      description: "Welcome to Text2SQL.ai Pro! Your plan is now active.",
-    });
-    // You would integrate with a payment provider here (e.g., Stripe)
+    setIsLoading(true);
+
+    try {
+      // 1. Get the current user
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        throw new Error("You must be logged in to make a payment.");
+      }
+      const user_id = session.user.id;
+
+      // 2. Get the last 4 digits of the card (NEVER store the full number)
+      const last4 = cardNumber.slice(-4);
+      
+      // 3. Save the *mock* data to Supabase
+      const { error: insertError } = await supabase
+        .from("mock_payment_details")
+        .insert({
+          user_id: user_id,
+          card_name: cardName,
+          card_number_last4: last4,
+          expiry_date: expiry,
+          // DO NOT SAVE THE CVC
+        });
+
+      if (insertError) {
+        throw insertError; // Throw error to be caught by catch block
+      }
+
+      // 4. Simulate payment processing (as before)
+      setTimeout(() => {
+        setIsLoading(false);
+
+        // Show success toast
+        toast.success("Payment Successful!", {
+          description: "Welcome to Text2SQL.ai Pro! Your plan is now active.",
+        });
+
+        // Redirect to the chat page
+        navigate("/chat");
+      }, 2000);
+
+    } catch (error: any) {
+      console.error("Payment error:", error);
+      toast.error("Payment Failed", {
+        description: error.message || "Could not process payment. Please try again.",
+      });
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -89,27 +151,60 @@ const ProUpgrade = () => {
                   <p className="text-sm text-muted-foreground">Enter your card details to complete the upgrade.</p>
                 </CardHeader>
                 <CardContent>
+                  {/* Updated form to capture state */}
                   <form onSubmit={handlePayment} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="cardName">Name on Card</Label>
-                      <Input id="cardName" placeholder="Jane Doe" required />
+                      <Input
+                        id="cardName"
+                        placeholder="Jane Doe"
+                        required
+                        disabled={isLoading}
+                        value={cardName}
+                        onChange={(e) => setCardName(e.target.value)}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="cardNumber">Card Number</Label>
-                      <Input id="cardNumber" placeholder="XXXX XXXX XXXX 4242" required />
+                      <Input
+                        id="cardNumber"
+                        placeholder="XXXX XXXX XXXX 4242"
+                        required
+                        disabled={isLoading}
+                        value={cardNumber}
+                        onChange={(e) => setCardNumber(e.target.value)}
+                      />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="expiry">Expiry</Label>
-                        <Input id="expiry" placeholder="MM/YY" required />
+                        <Input
+                          id="expiry"
+                          placeholder="MM/YY"
+                          required
+                          disabled={isLoading}
+                          value={expiry}
+                          onChange={(e) => setExpiry(e.target.value)}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="cvc">CVC</Label>
-                        <Input id="cvc" placeholder="123" required />
+                        <Input
+                          id="cvc"
+                          placeholder="123"
+                          required
+                          disabled={isLoading}
+                          value={cvc}
+                          onChange={(e) => setCvc(e.target.value)}
+                        />
                       </div>
                     </div>
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary-hover">
-                      Confirm Payment ($19/month)
+                    <Button
+                      type="submit"
+                      className="w-full bg-primary hover:bg-primary-hover"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Processing..." : "Confirm Payment ($19/month)"}
                     </Button>
                   </form>
                 </CardContent>

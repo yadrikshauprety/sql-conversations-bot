@@ -18,7 +18,7 @@ const Auth = () => {
           appearance={{ theme: ThemeSupa }}
           theme="dark"
           providers={["google", "github"]} // You can configure providers here
-          redirectTo={`${window.location.origin}/chat`} // This is for magic links (email sign-in)
+          redirectTo={`${window.location.origin}/`} // FIXED: Redirect to home page
         />
       </div>
     </div>

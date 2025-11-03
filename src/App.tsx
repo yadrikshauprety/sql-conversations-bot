@@ -84,7 +84,8 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            {/* Pass session to Index to render conditional header */}
+            <Route path="/" element={<Index session={session} />} />
 
             <Route
               path="/auth"
@@ -94,8 +95,8 @@ const App = () => {
                 ) : !session ? (
                   <Auth />
                 ) : (
-                  <Navigate to="/chat" replace />
-                )
+                  <Navigate to="/" replace />
+                ) // FIXED: Redirect to home page / on successful sign-in or if already logged in
               }
             />
 

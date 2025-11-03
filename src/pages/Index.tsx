@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Sparkles,
   Zap,
@@ -9,12 +9,35 @@ import {
   MessageSquare,
   ArrowRight,
   Check,
+  LogOut,
 } from "lucide-react";
+import type { Session } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 
-const Index = () => {
+interface IndexProps {
+  session: Session | null;
+}
+
+const Index = ({ session }: IndexProps) => {
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+  
+  const userEmail = session?.user?.email;
+  const userInitial = userEmail
+    ? userEmail[0].toUpperCase()
+    : "U";
+
+  // Helper function for conditional links
+  const getCtaLink = session ? "/chat" : "/auth";
+  const getCtaText = session ? "Go to Chat" : "Try for free now";
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Header (MODIFIED) */}
       <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-50">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
@@ -44,24 +67,59 @@ const Index = () => {
                 FAQ
               </a>
             </div>
+            {/* START MODIFIED TOP-RIGHT NAV */}
             <div className="flex items-center gap-4">
-              <Link to="/auth">
-                <Button variant="ghost" size="sm">
-                  Sign In
-                </Button>
-              </Link>
-              {/* FIXED: Links to /auth for sign-in/up */}
-              <Link to="/auth">
-                <Button size="sm" className="bg-primary hover:bg-primary-hover">
-                  Try for free
-                </Button>
-              </Link>
+              {session ? ( 
+                <>
+                  {/* User Info (Email and Initials) */}
+                  <div className="flex items-center gap-2">
+                    <span className="hidden sm:inline text-sm font-medium text-foreground">
+                      {userEmail}
+                    </span>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center text-sm font-medium text-primary-foreground">
+                      {userInitial}
+                    </div>
+                  </div>
+                  
+                  {/* Try Chat Button (Prominent CTA) */}
+                  <Link to="/chat">
+                    <Button size="sm" className="bg-primary hover:bg-primary-hover">
+                      Try Chat
+                    </Button>
+                  </Link>
+
+                  {/* Sign Out Button */}
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={handleSignOut}
+                    title="Sign Out"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </Button>
+                </>
+              ) : ( 
+                <>
+                  <Link to="/auth">
+                    <Button variant="ghost" size="sm">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link to="/auth">
+                    <Button size="sm" className="bg-primary hover:bg-primary-hover">
+                      Try for free
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
+            {/* END MODIFIED TOP-RIGHT NAV */}
           </nav>
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section (MODIFIED CTA) */}
       <section className="py-20 md:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
         <div className="container mx-auto px-4 text-center relative">
@@ -77,13 +135,12 @@ const Index = () => {
             natural language. Get accurate results in seconds.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            {/* FIXED: Links to /auth for sign-in/up */}
-            <Link to="/auth">
+            <Link to={getCtaLink}>
               <Button
                 size="lg"
                 className="bg-primary hover:bg-primary-hover text-lg px-8"
               >
-                Try for free now <ArrowRight className="ml-2 w-5 h-5" />
+                {getCtaText} <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
           </div>
@@ -150,7 +207,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Chat Demo Section */}
+      {/* Chat Demo Section (MODIFIED CTA) */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl overflow-hidden shadow-xl">
@@ -206,10 +263,9 @@ const Index = () => {
               </div>
             </div>
             <div className="p-6 bg-muted/30 border-t border-border text-center">
-              {/* FIXED: Links to /auth for sign-in/up */}
-              <Link to="/auth">
+              <Link to={getCtaLink}>
                 <Button className="bg-primary hover:bg-primary-hover">
-                  Start using Text2SQL.ai{" "}
+                  {session ? "Go to Chat" : "Start using Text2SQL.ai"}
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
@@ -366,7 +422,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section (MODIFIED CTA) */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center bg-gradient-to-br from-primary/10 to-primary/5 p-12 rounded-3xl border border-primary/20">
@@ -377,20 +433,19 @@ const Index = () => {
               Stop wasting time writing SQL queries. Let our AI generate them for
               you in seconds.
             </p>
-            {/* FIXED: Links to /auth for sign-in/up */}
-            <Link to="/auth">
+            <Link to={getCtaLink}>
               <Button
                 size="lg"
                 className="bg-primary hover:bg-primary-hover text-lg px-8"
               >
-                Try for free <ArrowRight className="ml-2 w-5 h-5" />
+                {getCtaText} <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Footer (MODIFIED CTA) */}
       <footer className="border-t border-border py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
@@ -425,9 +480,8 @@ const Index = () => {
                     Pricing
                   </a>
                 </li>
-                {/* FIXED: Links to /auth for sign-in/up */}
                 <li>
-                  <Link to="/auth" className="hover:text-foreground transition">
+                  <Link to={getCtaLink} className="hover:text-foreground transition">
                     Try Now
                   </Link>
                 </li>
